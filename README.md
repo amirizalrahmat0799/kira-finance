@@ -11,6 +11,8 @@ you sign in it syncs with the server in the background, so the same data shows u
 
 *Kira* is Malay for "count" or "calculate".
 
+**[⬇ Download the Android APK](https://github.com/amirizalrahmat0799/kira-finance/releases/latest)** · works offline out of the box; open Settings → Add sample data to explore.
+
 | Home | Budgets | Insights | Bills | Dark mode |
 |---|---|---|---|---|
 | ![Home](docs/screenshots/home.jpg) | ![Budgets](docs/screenshots/budgets.jpg) | ![Insights](docs/screenshots/insights.jpg) | ![Bills](docs/screenshots/bills.jpg) | ![Dark mode](docs/screenshots/home-dark.jpg) |
@@ -111,6 +113,22 @@ Or run the API from IntelliJ / Maven with a local database:
 docker compose up -d db
 cd backend && mvn spring-boot:run
 ```
+
+### 3. Build an installable APK
+
+Builds run in the cloud with [EAS Build](https://docs.expo.dev/build/introduction/), so no Android Studio is needed.
+
+```bash
+cd mobile
+npx eas-cli@latest login               # free Expo account
+npx eas-cli@latest build:configure     # first time only: links the project to your account
+npx eas-cli@latest build -p android --profile preview
+```
+
+The `preview` profile in `eas.json` produces an `.apk` you can install directly (the default `.aab` is only for the
+Play Store). Before building, set `EXPO_PUBLIC_API_URL` in that profile to your server's address; it becomes the default
+on the sign-in screen. The APK allows plain `http://` (via `expo-build-properties`) so it can reach a server on your
+Wi-Fi; a public deployment should use HTTPS instead.
 
 ## Tests
 
