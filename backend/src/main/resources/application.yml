@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: kira-api
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/kira}
+    username: ${DATABASE_USER:kira}
+    password: ${DATABASE_PASSWORD:kira}
+  mvc:
+    problemdetails:
+      enabled: true
+  jackson:
+    default-property-inclusion: always
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+kira:
+  jwt:
+    # 32+ bytes. The default is for local development only; set KIRA_JWT_SECRET everywhere else.
+    secret: ${KIRA_JWT_SECRET:local-dev-secret-change-me-0123456789abcdef}
+    issuer: kira-api
+    access-token-ttl: 15m
+    refresh-token-ttl: 30d
+  cors:
+    # Only the web preview needs CORS; the phone app doesn't send an Origin header.
+    allowed-origins: ${KIRA_CORS_ORIGINS:http://localhost:8081,http://localhost:19006}
+  sync:
+    max-rows-per-table: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /docs

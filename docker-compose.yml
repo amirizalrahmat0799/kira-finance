@@ -1,0 +1,36 @@
+# Local stack: PostgreSQL + the Kira API on http://localhost:8080 (Swagger UI at /docs).
+#   docker compose up --build
+# Phones on the same Wi-Fi reach it at http://<your computer's LAN IP>:8080
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: kira
+      POSTGRES_USER: kira
+      POSTGRES_PASSWORD: kira
+    ports:
+      - "5432:5432"
+    volumes:
+      - kira-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kira -d kira"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/kira
+      DATABASE_USER: kira
+      DATABASE_PASSWORD: kira
+      # Change this for anything other than local development (32+ characters)
+      KIRA_JWT_SECRET: ${KIRA_JWT_SECRET:-local-dev-secret-change-me-0123456789abcdef}
+    ports:
+      - "8080:8080"
+
+volumes:
+  kira-db:
