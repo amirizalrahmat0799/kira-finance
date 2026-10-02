@@ -144,6 +144,9 @@ KIRA_TEST_DB_URL=jdbc:postgresql://localhost:5432/kira mvn verify   # + integrat
   validation, refresh rotation and reuse detection, two-device sync, last-write-wins, tombstones, isolation between users,
   and account deletion. CI runs them with a PostgreSQL service container.
 
+The same checks also run on a self-hosted Jenkins defined as code: see the [`Jenkinsfile`](Jenkinsfile) and
+[jenkins-ci-lab](https://github.com/amirizalrahmat0799/jenkins-ci-lab).
+
 ## Project structure
 
 ```
