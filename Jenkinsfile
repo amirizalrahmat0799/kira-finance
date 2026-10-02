@@ -1,4 +1,4 @@
-// CI pipeline for the Jenkins CI lab (github.com/amirizalrahmat0799/jenkins-ci-lab).
+// CI pipeline for my self-hosted Jenkins (github.com/amirizalrahmat0799/jenkins-ci-lab).
 // Each step runs in a throwaway container started next to Jenkins: Maven for the backend, Node for the app.
 // `--volumes-from jenkins` shares the Jenkins workspace with that container, and the `ci-lab` network
 // lets the integration tests reach the lab's PostgreSQL (ci-postgres).
@@ -27,8 +27,8 @@ pipeline {
                         stage('Test database') {
                             steps {
                                 sh '''
-                                    docker exec ci-postgres dropdb -U kira --if-exists "$TEST_DB"
-                                    docker exec ci-postgres createdb -U kira "$TEST_DB"
+                                    docker exec ci-postgres dropdb -U ci --if-exists "$TEST_DB"
+                                    docker exec ci-postgres createdb -U ci "$TEST_DB"
                                 '''
                             }
                         }
@@ -39,6 +39,8 @@ pipeline {
                                       -v ci-lab-m2:/root/.m2 \
                                       -w "$WORKSPACE/backend" \
                                       -e KIRA_TEST_DB_URL="jdbc:postgresql://ci-postgres:5432/$TEST_DB" \
+                                      -e KIRA_TEST_DB_USER=ci \
+                                      -e KIRA_TEST_DB_PASSWORD=ci \
                                       "$MAVEN_IMAGE" mvn -B verify
                                 '''
                             }
@@ -76,7 +78,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker exec ci-postgres dropdb -U kira --if-exists "$TEST_DB" || true'
+            sh 'docker exec ci-postgres dropdb -U ci --if-exists "$TEST_DB" || true'
         }
     }
 }
